@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">MirrorTV</string>
+    <string name="default_device_name">Projector</string>
+    <string name="idle_title">AirPlay receiver</string>
+    <string name="instructions">On your iPhone, open Control Center, tap Screen Mirroring\nand choose the name above. Both devices must be on the same Wi-Fi.\nPress Back on the remote to stop mirroring.</string>
+    <string name="status_starting">Starting…</string>
+    <string name="status_ready">Ready — waiting for an iPhone</string>
+    <string name="status_connecting">Connecting to %1$s…</string>
+    <string name="status_error">Could not start the receiver (error %1$d). Check the Wi-Fi connection.</string>
+    <string name="address">Projector address: %1$s</string>
+    <string name="no_network">No network connection</string>
+    <string name="rename_button">Rename</string>
+    <string name="rename_title">Name shown on the iPhone</string>
+    <string name="rename_invalid">Please enter a name</string>
+    <string name="fps_button">Frame rate: %1$d fps</string>
+</resources>
