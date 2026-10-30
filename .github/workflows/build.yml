@@ -20,10 +20,14 @@ jobs:
           distribution: temurin
           java-version: 17
 
-      - uses: android-actions/setup-android@v3
-
+      # The runner image already ships the Android SDK; just add the NDK and CMake we need.
       - name: Install NDK and CMake
-        run: sdkmanager --install "ndk;27.2.12479018" "cmake;3.22.1"
+        run: |
+          SDK="${ANDROID_SDK_ROOT:-$ANDROID_HOME}"
+          SDKMANAGER="$(ls -d "$SDK"/cmdline-tools/*/bin/sdkmanager | sort -V | tail -1)"
+          echo "Using $SDKMANAGER"
+          yes | "$SDKMANAGER" --licenses > /dev/null || true
+          "$SDKMANAGER" --install "ndk;27.2.12479018" "cmake;3.22.1" "platforms;android-35" "build-tools;35.0.0"
 
       - name: Fetch AirPlay / plist / ALAC sources
         run: |
