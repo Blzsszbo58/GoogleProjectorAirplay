@@ -1,0 +1,6 @@
+
+Failure!  build file wasn't produced.
+Please read INSTALL.md and associated NOTES-* files.  You may also have to
+look over your available compiler tool chain or change your configuration.
+
+***** Unsupported options: no-docs, no-apps
