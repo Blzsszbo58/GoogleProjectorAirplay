@@ -26,7 +26,10 @@ jobs:
         run: sdkmanager --install "ndk;27.2.12479018" "cmake;3.22.1"
 
       - name: Fetch AirPlay / plist / ALAC sources
-        run: scripts/fetch-deps.sh
+        run: |
+          mkdir -p ci-logs
+          set -o pipefail
+          scripts/fetch-deps.sh 2>&1 | tee ci-logs/1-fetch.log
 
       - name: Cache OpenSSL build
         uses: actions/cache@v4
@@ -35,14 +38,18 @@ jobs:
           key: openssl-3.0.15-api26-ndk27.2-v1
 
       - name: Build OpenSSL for Android
-        env:
-          ANDROID_NDK_ROOT: ${{ env.ANDROID_SDK_ROOT }}/ndk/27.2.12479018
-        run: scripts/build-openssl.sh
+        run: |
+          set -o pipefail
+          export ANDROID_NDK_ROOT="${ANDROID_SDK_ROOT:-$ANDROID_HOME}/ndk/27.2.12479018"
+          ls "$ANDROID_NDK_ROOT" > /dev/null
+          scripts/build-openssl.sh 2>&1 | tee ci-logs/2-openssl.log
 
       - uses: gradle/actions/setup-gradle@v4
 
       - name: Build APK
-        run: ./gradlew --no-daemon assembleRelease
+        run: |
+          set -o pipefail
+          ./gradlew --no-daemon --stacktrace assembleRelease 2>&1 | tee ci-logs/3-gradle.log
 
       - name: Rename APK
         run: cp app/build/outputs/apk/release/app-release.apk MirrorTV.apk
@@ -63,3 +70,16 @@ jobs:
           git add MirrorTV.apk BUILT_FROM.txt
           git commit -q -m "APK built from ${GITHUB_SHA}"
           git push -f "https://x-access-token:${{ github.token }}@github.com/${GITHUB_REPOSITORY}.git" apk
+
+      - name: Publish logs to the 'ci-logs' branch (on failure)
+        if: failure()
+        run: |
+          mkdir -p /tmp/logs && cp -r ci-logs/. /tmp/logs/ 2>/dev/null || true
+          echo "${GITHUB_SHA}" > /tmp/logs/BUILT_FROM.txt
+          cd /tmp/logs
+          git init -q -b ci-logs
+          git config user.name "github-actions"
+          git config user.email "github-actions@users.noreply.github.com"
+          git add -A
+          git commit -q -m "CI logs for ${GITHUB_SHA}"
+          git push -f "https://x-access-token:${{ github.token }}@github.com/${GITHUB_REPOSITORY}.git" ci-logs
