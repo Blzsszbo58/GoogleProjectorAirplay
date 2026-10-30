@@ -39,7 +39,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: third_party/openssl-android
-          key: openssl-3.0.15-api26-ndk27.2-v1
+          key: openssl-3.0.15-api26-ndk27.2-v2
 
       - name: Build OpenSSL for Android
         run: |

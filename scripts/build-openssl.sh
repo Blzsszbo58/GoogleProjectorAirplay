@@ -51,7 +51,7 @@ for ABI in $ABIS; do
     (
         cd "$SRC"
         ./Configure "$TARGET" -D__ANDROID_API__="$API" \
-            no-shared no-tests no-apps no-docs -fPIC \
+            no-shared no-tests -fPIC \
             --prefix="$OUT/$ABI" --libdir=lib
         make -j"$(nproc 2>/dev/null || echo 4)" build_libs
         make install_dev
